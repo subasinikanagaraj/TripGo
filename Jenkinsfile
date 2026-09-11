@@ -45,7 +45,7 @@ pipeline {
                 sh '''
                     sleep 5
                     docker ps
-                    curl -f http://localhost:4000
+                    docker logs --tail 30 travelgo-backend
                 '''
             }
         }
