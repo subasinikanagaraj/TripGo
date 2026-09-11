@@ -11,7 +11,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t travelgo-backend ./backend'
+                sh '''
+                    docker build -t travelgo-backend ./backend
+                '''
             }
         }
 
@@ -30,7 +32,8 @@ pipeline {
                     docker run -d \
                     --name travelgo-backend \
                     --add-host=host.docker.internal:host-gateway \
-                    --env-file /home/ubuntu/TripGo/backend/.env \
+                    -e MONGODB_URI=mongodb://host.docker.internal:27017 \
+                    -e PORT=4000 \
                     -p 4000:4000 \
                     travelgo-backend
                 '''
@@ -45,6 +48,16 @@ pipeline {
                     curl -f http://localhost:4000
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'TravelGo Backend deployed successfully!'
+        }
+
+        failure {
+            echo 'TravelGo Backend deployment failed!'
         }
     }
 }
